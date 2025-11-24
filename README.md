@@ -8,7 +8,7 @@ GitHub Actions allows you to build your app on macOS, Windows and Linux without 
 
 ## Setup
 
-1. **Install and configure `electron-builder`** (v22+) in your Electron app. You can read about this in [the project's docs](https://www.electron.build) or in [my blog post](https://samuelmeuli.com/blog/2019-04-07-packaging-and-publishing-an-electron-app).
+1. **Install and configure `electron-builder`** (v22+) in your Electron app. You can read about this in [the project's docs](https://www.electron.build).
 
 2. If you need to compile code (e.g. TypeScript to JavaScript or Sass to CSS), make sure this is done using a **`build` script in your `package.json` file**. The action will execute that script before packaging your app. However, **make sure that the `build` script does _not_ run `electron-builder`**, as this action will do that for you.
 
@@ -17,7 +17,12 @@ GitHub Actions allows you to build your app on macOS, Windows and Linux without 
    ```yml
    name: Build/release
 
-   on: push
+   on:
+    push:
+      tags:
+       - 'v[0-9]+.[0-9]+.[0-9]+'
+       - 'v[0-9]+.[0-9]+.[0-9]+-[a-zA-Z0-9.-]+'
+    workflow_dispatch:
 
    jobs:
      release:
@@ -29,15 +34,15 @@ GitHub Actions allows you to build your app on macOS, Windows and Linux without 
 
        steps:
          - name: Check out Git repository
-           uses: actions/checkout@v1
+           uses: actions/checkout@v6
 
          - name: Install Node.js, NPM and Yarn
-           uses: actions/setup-node@v1
+           uses: actions/setup-node@v6
            with:
-             node-version: 10
+             node-version: 24
 
          - name: Build/release Electron app
-           uses: samuelmeuli/action-electron-builder@v1
+           uses: anechunaev/action-electron-builder@v1
            with:
              # GitHub token, automatically provided to the action
              # (No need to define this secret in the repo settings)
@@ -95,7 +100,7 @@ Add the following options to your workflow's existing `action-electron-builder` 
 
 ```yml
 - name: Build/release Electron app
-  uses: samuelmeuli/action-electron-builder@v1
+  uses: anechunaev/action-electron-builder@v1
   with:
     # ...
     mac_certs: ${{ secrets.mac_certs }}
@@ -145,7 +150,7 @@ If you've configured `electron-builder` to notarize your Electron Mac app [as de
 
     ```yml
     - name: Build/release Electron app
-      uses: samuelmeuli/action-electron-builder@v1
+      uses: anechunaev/action-electron-builder@v1
       with:
         # ...
       env:
